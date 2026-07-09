@@ -1,0 +1,17 @@
+{
+  "watch": [
+    "app.js",
+    "config",
+    "core",
+    "middleware",
+    "modules",
+    "data",
+    "package.json"
+  ],
+  "ext": "js,json,html",
+  "ignore": [
+    "node_modules",
+    "public"
+  ],
+  "exec": "node"
+}
