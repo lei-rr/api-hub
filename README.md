@@ -293,7 +293,7 @@ mkdir -p data && docker run -d \
   -p 2020:2020 \
   -v $(pwd)/data:/app/data \
   --restart unless-stopped \
-  ghcr.io/lei-rr/api-hub:master
+  ghcr.io/lei-rr/api-hub:latest
 ```
 
 > **必须带 `-v $(pwd)/data:/app/data`**，否则容器删除后所有配置（管理员密码、上游密钥、路由规则）都会丢失。
@@ -303,7 +303,7 @@ mkdir -p data && docker run -d \
 拉取镜像：
 
 ```bash
-docker pull ghcr.io/lei-rr/api-hub:master
+docker pull ghcr.io/lei-rr/api-hub:latest
 ```
 
 创建本地数据目录并运行：
@@ -315,7 +315,7 @@ docker run -d \
   -p 2020:2020 \
   -v $(pwd)/data:/app/data \
   --restart unless-stopped \
-  ghcr.io/lei-rr/api-hub:master
+  ghcr.io/lei-rr/api-hub:latest
 ```
 
 #### 使用 Docker Compose
@@ -325,7 +325,7 @@ version: '3.8'
 
 services:
   api-hub:
-    image: ghcr.io/lei-rr/api-hub:master
+    image: ghcr.io/lei-rr/api-hub:latest
     container_name: api-hub
     ports:
       - "2020:2020"

@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   api-hub:
-    image: ghcr.io/lei-rr/api-hub:master
+    image: ghcr.io/lei-rr/api-hub:latest
     container_name: api-hub
     ports:
       - "2020:2020"
