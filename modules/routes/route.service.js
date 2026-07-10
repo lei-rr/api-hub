@@ -1,12 +1,14 @@
 /**
  * 路由规则业务逻辑
- * 客户端 + 客户端模型名 → 渠道 + 上游模型
+ * 客户端 + 客户端模型名 → 多个目标（渠道 + 渠道模型）
  */
 
 const { uuid, now } = require('../../shared/utils');
 const { NotFoundError, ValidationError } = require('../../shared/errors');
 const routeModel = require('./route.model');
 const routeRepository = require('./route.repository');
+
+const routeState = new Map();
 
 function list() {
   return routeRepository.read();
@@ -33,6 +35,7 @@ function create(data) {
   const route = routeModel.create({
     ...data,
     id: uuid(),
+    currentIndex: 0,
     createdAt: now()
   });
   routes.push(route);
@@ -73,6 +76,7 @@ function remove(id) {
   if (index === -1) throw new NotFoundError(`Route ${id} not found`);
   routes.splice(index, 1);
   routeRepository.write(routes);
+  routeState.delete(id);
 }
 
 function listByClient(clientId) {
@@ -80,7 +84,9 @@ function listByClient(clientId) {
 }
 
 function listByChannel(channelId) {
-  return list().filter(r => r.channelId === channelId);
+  return list().filter(r =>
+    r.targets.some(t => t.channelId === channelId)
+  );
 }
 
 function getByClientModel(clientId, clientModel) {
@@ -91,14 +97,29 @@ function getByClientModel(clientId, clientModel) {
   ) || null;
 }
 
+function selectTarget(route) {
+  const targets = route.targets.filter(t => t.enabled !== false);
+  if (targets.length === 0) return null;
+
+  if (route.strategy === 'random') {
+    return targets[Math.floor(Math.random() * targets.length)];
+  }
+
+  // round-robin
+  let index = routeState.get(route.id) || 0;
+  const target = targets[index % targets.length];
+  index = (index + 1) % targets.length;
+  routeState.set(route.id, index);
+  return target;
+}
+
 function getAllClientModels() {
   return list()
     .filter(r => r.enabled)
     .map(r => ({
       id: r.clientModel,
       object: 'model',
-      clientId: r.clientId,
-      channelId: r.channelId
+      clientId: r.clientId
     }));
 }
 
@@ -111,5 +132,6 @@ module.exports = {
   listByClient,
   listByChannel,
   getByClientModel,
+  selectTarget,
   getAllClientModels
 };

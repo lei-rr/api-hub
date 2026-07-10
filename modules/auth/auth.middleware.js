@@ -1,13 +1,14 @@
 /**
  * 鉴权中间件
- * 将解析出的四层上下文挂载到 req.context
+ * 仅把解析出的客户端对象挂载到 req.client
+ * 路由解析交给 routes/route.middleware
  */
 
 const authService = require('./auth.service');
 
 function authMiddleware(req, res, next) {
   try {
-    req.context = authService.resolveContext(req);
+    req.client = authService.resolveClient(req);
     next();
   } catch (err) {
     next(err);

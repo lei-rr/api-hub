@@ -1,6 +1,6 @@
 /**
  * 路由规则管理组件
- * 客户端 + 客户端模型名 → 渠道 + 渠道模型
+ * 客户端 + 客户端模型名 → 多个目标（渠道 + 渠道模型）
  */
 
 const RouteManager = {
@@ -11,23 +11,23 @@ const RouteManager = {
 
     const modalVisible = Vue.ref(false);
     const isEdit = Vue.ref(false);
-    const fetching = Vue.ref(false);
-    const upstreamOptions = Vue.ref([]);
+    const fetching = Vue.ref({});
+    const upstreamOptions = Vue.ref({});
 
     const form = Vue.reactive({
       id: null,
       clientId: '',
-      channelId: '',
       clientModel: '',
-      upstreamModel: '',
+      strategy: 'round-robin',
+      targets: [],
       enabled: true
     });
 
     const columns = [
       { title: '客户端', key: 'client' },
       { title: '客户端模型', dataIndex: 'clientModel', key: 'clientModel' },
-      { title: '渠道', key: 'channel' },
-      { title: '渠道模型', dataIndex: 'upstreamModel', key: 'upstreamModel' },
+      { title: '策略', dataIndex: 'strategy', key: 'strategy' },
+      { title: '目标渠道', key: 'targets' },
       { title: '启用', dataIndex: 'enabled', key: 'enabled' },
       { title: '操作', key: 'action' }
     ];
@@ -35,11 +35,11 @@ const RouteManager = {
     function resetForm() {
       form.id = null;
       form.clientId = store.clients[0]?.id || '';
-      form.channelId = store.channels[0]?.id || '';
       form.clientModel = '';
-      form.upstreamModel = '';
+      form.strategy = 'round-robin';
+      form.targets = [];
       form.enabled = true;
-      upstreamOptions.value = [];
+      upstreamOptions.value = {};
     }
 
     function openCreate() {
@@ -48,19 +48,50 @@ const RouteManager = {
       modalVisible.value = true;
     }
 
-    async function openEdit(record) {
-      Object.assign(form, record);
+    function openEdit(record) {
+      Object.assign(form, {
+        ...record,
+        targets: record.targets.map(t => ({ ...t }))
+      });
       isEdit.value = true;
       modalVisible.value = true;
-      await fetchUpstream();
+      upstreamOptions.value = {};
+    }
+
+    function addTarget() {
+      form.targets.push({
+        channelId: store.channels[0]?.id || '',
+        upstreamModel: '',
+        weight: 1
+      });
+    }
+
+    function removeTarget(index) {
+      form.targets.splice(index, 1);
+    }
+
+    async function fetchUpstream(index) {
+      const target = form.targets[index];
+      if (!target || !target.channelId) return;
+
+      fetching.value[index] = true;
+      try {
+        const res = await channelApi.fetchModels(target.channelId);
+        upstreamOptions.value[index] = (res.data.data || []).map(m => ({
+          label: m.id,
+          value: m.id
+        }));
+      } finally {
+        fetching.value[index] = false;
+      }
     }
 
     async function saveRoute() {
       const data = {
         clientId: form.clientId,
-        channelId: form.channelId,
         clientModel: form.clientModel,
-        upstreamModel: form.upstreamModel,
+        strategy: form.strategy,
+        targets: form.targets,
         enabled: form.enabled
       };
 
@@ -79,20 +110,6 @@ const RouteManager = {
       await store.loadAll();
     }
 
-    async function fetchUpstream() {
-      if (!form.channelId) return;
-      fetching.value = true;
-      try {
-        const res = await channelApi.fetchModels(form.channelId);
-        upstreamOptions.value = (res.data.data || []).map(m => ({
-          label: m.id,
-          value: m.id
-        }));
-      } finally {
-        fetching.value = false;
-      }
-    }
-
     function getClientName(clientId) {
       const client = store.clients.find(c => c.id === clientId);
       return client ? `${client.name} (${client.apiKey})` : '-';
@@ -101,6 +118,11 @@ const RouteManager = {
     function getChannelName(channelId) {
       const channel = store.channels.find(c => c.id === channelId);
       return channel ? channel.name : '-';
+    }
+
+    function formatTargets(targets) {
+      if (!targets || targets.length === 0) return '-';
+      return targets.map(t => `${getChannelName(t.channelId)}/${t.upstreamModel}`).join('、');
     }
 
     return {
@@ -113,11 +135,13 @@ const RouteManager = {
       upstreamOptions,
       openCreate,
       openEdit,
+      addTarget,
+      removeTarget,
+      fetchUpstream,
       saveRoute,
       deleteRoute,
-      fetchUpstream,
       getClientName,
-      getChannelName
+      formatTargets
     };
   },
 
@@ -135,8 +159,11 @@ const RouteManager = {
           <template v-if="column.key === 'client'">
             {{ getClientName(record.clientId) }}
           </template>
-          <template v-if="column.key === 'channel'">
-            {{ getChannelName(record.channelId) }}
+          <template v-if="column.key === 'strategy'">
+            {{ record.strategy === 'round-robin' ? '轮询' : '随机' }}
+          </template>
+          <template v-if="column.key === 'targets'">
+            {{ formatTargets(record.targets) }}
           </template>
           <template v-if="column.key === 'enabled'">
             <a-switch :checked="record.enabled" disabled />
@@ -157,30 +184,9 @@ const RouteManager = {
         :title="isEdit ? '编辑路由规则' : '新增路由规则'"
         @ok="saveRoute"
         @cancel="modalVisible = false"
-        width="600px"
+        width="700px"
       >
         <a-form layout="vertical">
-          <a-form-item label="渠道">
-            <a-select
-              v-model:value="form.channelId"
-              :options="store.channels.map(c => ({ label: c.name, value: c.id }))"
-              placeholder="选择渠道"
-            />
-          </a-form-item>
-          <a-form-item label="渠道模型">
-            <a-space style="width: 100%;">
-              <a-select
-                v-model:value="form.upstreamModel"
-                :options="upstreamOptions"
-                placeholder="选择或输入渠道模型名"
-                style="width: 360px"
-                show-search
-                allow-clear
-                :dropdown-match-select-width="false"
-              />
-              <a-button :loading="fetching" @click="fetchUpstream">获取</a-button>
-            </a-space>
-          </a-form-item>
           <a-form-item label="客户端">
             <a-select
               v-model:value="form.clientId"
@@ -191,6 +197,48 @@ const RouteManager = {
           <a-form-item label="客户端模型名">
             <a-input v-model:value="form.clientModel" placeholder="Codex 里填的模型名，如：gpt" />
           </a-form-item>
+          <a-form-item label="策略">
+            <a-radio-group v-model:value="form.strategy">
+              <a-radio value="round-robin">轮询</a-radio>
+              <a-radio value="random">随机</a-radio>
+            </a-radio-group>
+          </a-form-item>
+
+          <a-form-item label="目标渠道">
+            <a-space direction="vertical" style="width: 100%;" size="small">
+              <a-row v-for="(target, index) in form.targets" :key="index" :gutter="8" align="middle">
+                <a-col :span="9">
+                  <a-select
+                    v-model:value="target.channelId"
+                    :options="store.channels.map(c => ({ label: c.name, value: c.id }))"
+                    placeholder="选择渠道"
+                    style="width: 100%;"
+                  />
+                </a-col>
+                <a-col :span="9">
+                  <a-select
+                    v-model:value="target.upstreamModel"
+                    :options="upstreamOptions[index] || []"
+                    placeholder="渠道模型名"
+                    style="width: 100%;"
+                    show-search
+                    allow-clear
+                    :dropdown-match-select-width="false"
+                  />
+                </a-col>
+                <a-col :span="6">
+                  <a-space>
+                    <a-button size="small" :loading="fetching[index]" @click="fetchUpstream(index)">获取</a-button>
+                    <a-button size="small" danger @click="removeTarget(index)">删除</a-button>
+                  </a-space>
+                </a-col>
+              </a-row>
+              <a-button type="dashed" block @click="addTarget" v-if="form.targets.length < 10">
+                + 添加目标渠道
+              </a-button>
+            </a-space>
+          </a-form-item>
+
           <a-form-item>
             <a-checkbox v-model:checked="form.enabled">启用</a-checkbox>
           </a-form-item>

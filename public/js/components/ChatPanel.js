@@ -34,8 +34,13 @@ const ChatPanel = {
     const routeInfo = Vue.computed(() => {
       const route = store.currentRoute;
       if (!route) return '无路由规则';
-      const channel = store.channels.find(c => c.id === route.channelId);
-      return `${channel?.name || '-'} → ${route.upstreamModel}`;
+      if (!route.targets || route.targets.length === 0) return '路由规则无目标';
+
+      const targets = route.targets.map(t => {
+        const channel = store.channels.find(c => c.id === t.channelId);
+        return `${channel?.name || '-'}/${t.upstreamModel}`;
+      });
+      return `策略：${route.strategy === 'round-robin' ? '轮询' : '随机'} | 目标：${targets.join('、')}`;
     });
 
     async function sendMessage() {

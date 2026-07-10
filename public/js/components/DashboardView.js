@@ -51,10 +51,18 @@ const DashboardView = {
             <template #default="{ text }">{{ getClientName(text) }}</template>
           </a-table-column>
           <a-table-column title="客户端模型" dataIndex="clientModel" />
-          <a-table-column title="渠道" dataIndex="channelId" key="channel">
-            <template #default="{ text }">{{ getChannelName(text) }}</template>
+          <a-table-column title="策略" dataIndex="strategy" key="strategy">
+            <template #default="{ text }">{{ text === 'round-robin' ? '轮询' : '随机' }}</template>
           </a-table-column>
-          <a-table-column title="渠道模型" dataIndex="upstreamModel" />
+          <a-table-column title="目标渠道" key="targets">
+            <template #default="{ record }">
+              <a-space wrap>
+                <a-tag v-for="(t, i) in record.targets" :key="i">
+                  {{ getChannelName(t.channelId) }}/{{ t.upstreamModel }}
+                </a-tag>
+              </a-space>
+            </template>
+          </a-table-column>
           <a-table-column title="状态" dataIndex="enabled" key="enabled">
             <template #default="{ text }">
               <a-tag :color="text ? 'success' : 'default'">{{ text ? '启用' : '禁用' }}</a-tag>

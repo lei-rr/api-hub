@@ -1,12 +1,26 @@
 {
-  "name": "hub-guolei-proxy",
+  "name": "api-hub",
   "version": "1.0.0",
-  "description": "OpenAI compatible API proxy with channel management",
+  "description": "OpenAI 兼容 API 中转与管理平台，支持客户端、路由规则、渠道、密钥四模块解耦与一对多路由",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lei-rr/api-hub.git"
+  },
+  "keywords": [
+    "openai",
+    "api-proxy",
+    "chatgpt",
+    "management-dashboard",
+    "vue3",
+    "express"
+  ],
+  "author": "lei-rr",
+  "license": "MIT",
   "dependencies": {
     "axios": "^1.6.2",
     "express": "^4.18.2",

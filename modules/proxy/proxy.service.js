@@ -1,6 +1,7 @@
 /**
  * 中转服务
- * 四层：client -> channel -> key -> model
+ * 只负责把请求转发到已解析好的上游渠道
+ * 上游地址、密钥、模型均来自 req.routeContext
  * 使用 axios 直接转发，避免 OpenAI SDK 额外头部被上游 WAF 拦截
  */
 
@@ -20,18 +21,18 @@ function createHeaders(req) {
   };
 }
 
-function mapBody(body, route) {
+function mapBody(body, upstreamModel) {
   if (!body || typeof body !== 'object') return body;
   return {
     ...body,
-    model: route.upstreamModel
+    model: upstreamModel
   };
 }
 
 async function forward(req, res, context) {
-  const { channel, key, route } = context;
+  const { channel, key, upstreamModel } = context;
   const upstreamUrl = buildUpstreamUrl(channel.baseUrl, req.path);
-  const upstreamBody = mapBody(req.body, route);
+  const upstreamBody = mapBody(req.body, upstreamModel);
 
   const headers = createHeaders(req);
   headers['Authorization'] = `Bearer ${key.value}`;

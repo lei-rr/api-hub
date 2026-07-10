@@ -1,6 +1,6 @@
 /**
  * Pinia Store
- * 路由核心：客户端 + 客户端模型名 → 渠道 + 上游模型
+ * 路由核心：客户端 + 客户端模型名 → 多个目标（渠道 + 渠道模型）
  */
 
 const { defineStore } = Pinia;
@@ -11,7 +11,6 @@ const useHubStore = defineStore('hub', {
     channels: [],
     routes: [],
     keys: [],
-    upstreamModels: [],
     currentClientId: null,
     currentModel: '',
     messages: [],
@@ -81,10 +80,6 @@ const useHubStore = defineStore('hub', {
 
     clearMessages() {
       this.messages = [];
-    },
-
-    setUpstreamModels(models) {
-      this.upstreamModels = models || [];
     }
   }
 });
