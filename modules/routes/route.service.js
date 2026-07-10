@@ -23,6 +23,13 @@ function create(data) {
   if (errors.length > 0) throw new ValidationError(errors.join('; '));
 
   const routes = list();
+  const exists = routes.find(r =>
+    r.clientId === data.clientId && r.clientModel === data.clientModel
+  );
+  if (exists) {
+    throw new ValidationError(`Route for this client and model already exists`);
+  }
+
   const route = routeModel.create({
     ...data,
     id: uuid(),
@@ -40,6 +47,15 @@ function update(id, data) {
   const routes = list();
   const index = routes.findIndex(r => r.id === id);
   if (index === -1) throw new NotFoundError(`Route ${id} not found`);
+
+  const duplicate = routes.find(r =>
+    r.clientId === data.clientId &&
+    r.clientModel === data.clientModel &&
+    r.id !== id
+  );
+  if (duplicate) {
+    throw new ValidationError(`Route for this client and model already exists`);
+  }
 
   routes[index] = routeModel.create({
     ...routes[index],

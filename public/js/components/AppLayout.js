@@ -14,11 +14,11 @@ const AppLayout = {
 
     const menuItems = [
       { key: '/dashboard', label: '控制台' },
-      { key: '/test', label: '中转测试' },
       { key: '/channels', label: '渠道' },
       { key: '/keys', label: '密钥' },
       { key: '/clients', label: '客户端' },
-      { key: '/routes', label: '路由规则' }
+      { key: '/routes', label: '路由规则' },
+      { key: '/test', label: '中转测试' }
     ];
 
     function logout() {

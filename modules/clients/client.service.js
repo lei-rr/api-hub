@@ -26,6 +26,11 @@ function create(data) {
   if (errors.length > 0) throw new ValidationError(errors.join('; '));
 
   const clients = list();
+  const exists = clients.find(c => c.apiKey === data.apiKey);
+  if (exists) {
+    throw new ValidationError(`API Key "${data.apiKey}" already exists`);
+  }
+
   const client = clientModel.create({
     ...data,
     id: uuid(),
@@ -43,6 +48,11 @@ function update(id, data) {
   const clients = list();
   const index = clients.findIndex(c => c.id === id);
   if (index === -1) throw new NotFoundError(`Client ${id} not found`);
+
+  const duplicate = clients.find(c => c.apiKey === data.apiKey && c.id !== id);
+  if (duplicate) {
+    throw new ValidationError(`API Key "${data.apiKey}" already exists`);
+  }
 
   clients[index] = clientModel.create({
     ...clients[index],
