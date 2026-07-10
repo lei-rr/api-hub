@@ -281,9 +281,47 @@ server {
 }
 ```
 
-### 使用 Docker（可选）
+### 使用 Docker
 
-项目当前为 Node.js 原生运行，Docker 支持后续补充，也欢迎 PR。
+项目已提供 Dockerfile，每次推送到 `master` 或推送 `v*` 标签时，GitHub Actions 会自动构建并发布镜像到 GitHub Container Registry。
+
+#### 拉取最新镜像
+
+```bash
+docker pull ghcr.io/lei-rr/api-hub:master
+```
+
+#### 运行容器
+
+```bash
+docker run -d \
+  --name api-hub \
+  -p 3000:3000 \
+  -v $(pwd)/data:/app/data \
+  ghcr.io/lei-rr/api-hub:master
+```
+
+> 注意：`-v $(pwd)/data:/app/data` 将数据目录挂载到宿主机，避免容器重启后数据丢失。
+
+#### 使用 Docker Compose
+
+```yaml
+version: '3.8'
+
+services:
+  api-hub:
+    image: ghcr.io/lei-rr/api-hub:master
+    container_name: api-hub
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+```
+
+```bash
+docker compose up -d
+```
 
 ## 开发
 
