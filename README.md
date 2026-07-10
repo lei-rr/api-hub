@@ -65,7 +65,7 @@ npm start
 打开浏览器访问 `http://localhost:3000`，使用默认管理员账号登录：
 
 - 用户名：`admin`
-- 密码：`guolei`
+- 密码：`admin`
 
 ### 5. 默认客户端调用
 
@@ -178,13 +178,19 @@ Upstream OpenAI API
 
 ## 配置
 
-所有业务数据保存在 `data/*.json`，启动时自动加载。你可以直接编辑 JSON 文件，也可以通过 Web 后台管理。
+所有业务数据保存在 `data/*.json`，**首次启动时会自动创建**。你可以直接编辑 JSON 文件，也可以通过 Web 后台管理。
+
+`data/` 目录已加入 `.gitignore`，不会提交到 GitHub，避免泄露密钥和密码。
 
 ### 默认数据
 
-- 管理员：`admin` / `guolei`
+首次启动后自动生成：
+
+- 管理员：`admin` / `admin`（Token：`hub-guolei-token`）
 - 客户端 API Key：`guolei`
 - 默认客户端模型：`gpt-4o-mini`
+
+> 建议首次登录后立即在后台或通过修改 `data/admin.json` 更换管理员密码和 Token。
 
 ### 替换上游
 
@@ -195,11 +201,8 @@ Upstream OpenAI API
 | 变量 | 说明 | 默认值 |
 |---|---|---|
 | `PORT` | 服务端口 | `3000` |
-| `ADMIN_USERNAME` | 管理员用户名 | `admin` |
-| `ADMIN_PASSWORD` | 管理员密码 | `guolei` |
-| `ADMIN_TOKEN` | 管理 Token | `hub-guolei-token` |
 
-你也可以直接修改 `config/app.config.js`。
+管理员账号/密码/Token 已迁移到 `data/admin.json`，不再通过环境变量配置。
 
 ## 部署
 

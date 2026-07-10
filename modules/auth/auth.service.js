@@ -4,10 +4,8 @@
  */
 
 const { ValidationError, AppError } = require('../../shared/errors');
-const config = require('../../config/app.config');
 const clientService = require('../clients/client.service');
-
-const ADMIN_TOKEN = config.admin.token;
+const adminService = require('./admin.service');
 
 function extractApiKey(req) {
   const auth = req.headers.authorization || '';
@@ -36,14 +34,16 @@ function resolveClient(req) {
 }
 
 function login(username, password) {
-  if (username !== config.admin.username || password !== config.admin.password) {
+  const admin = adminService.getConfig();
+  if (username !== admin.username || password !== admin.password) {
     throw new AppError('Invalid username or password', 401, 'UNAUTHORIZED');
   }
-  return { token: ADMIN_TOKEN };
+  return { token: admin.token };
 }
 
 function verifyAdmin(token) {
-  return token === ADMIN_TOKEN;
+  const admin = adminService.getConfig();
+  return token === admin.token;
 }
 
 module.exports = {

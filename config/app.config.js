@@ -4,14 +4,10 @@ module.exports = {
   port: process.env.PORT || 3000,
   dataDir: path.join(__dirname, '../data'),
   files: {
+    admin: path.join(__dirname, '../data/admin.json'),
     clients: path.join(__dirname, '../data/clients.json'),
     upstreams: path.join(__dirname, '../data/upstreams.json'),
     routes: path.join(__dirname, '../data/routes.json')
-  },
-  admin: {
-    username: process.env.ADMIN_USERNAME || 'admin',
-    password: process.env.ADMIN_PASSWORD || 'guolei',
-    token: process.env.ADMIN_TOKEN || 'hub-guolei-token'
   },
   cors: {
     origin: '*',
