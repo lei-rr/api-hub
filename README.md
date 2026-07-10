@@ -285,23 +285,38 @@ server {
 
 项目已提供 Dockerfile，每次推送到 `master` 或推送 `v*` 标签时，GitHub Actions 会自动构建并发布镜像到 GitHub Container Registry。
 
-#### 拉取最新镜像
+#### 一键运行（带数据映射）
+
+```bash
+mkdir -p data && docker run -d \
+  --name api-hub \
+  -p 2020:2020 \
+  -v $(pwd)/data:/app/data \
+  --restart unless-stopped \
+  ghcr.io/lei-rr/api-hub:master
+```
+
+> **必须带 `-v $(pwd)/data:/app/data`**，否则容器删除后所有配置（管理员密码、上游密钥、路由规则）都会丢失。
+
+#### 分步操作
+
+拉取镜像：
 
 ```bash
 docker pull ghcr.io/lei-rr/api-hub:master
 ```
 
-#### 运行容器
+创建本地数据目录并运行：
 
 ```bash
+mkdir -p data
 docker run -d \
   --name api-hub \
   -p 2020:2020 \
   -v $(pwd)/data:/app/data \
+  --restart unless-stopped \
   ghcr.io/lei-rr/api-hub:master
 ```
-
-> 注意：`-v $(pwd)/data:/app/data` 将数据目录挂载到宿主机，避免容器重启后数据丢失。
 
 #### 使用 Docker Compose
 
