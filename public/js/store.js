@@ -5,6 +5,10 @@
 
 const { defineStore } = Pinia;
 
+function extractError(err) {
+  return err.response?.data?.error?.message || err.message || '未知错误';
+}
+
 const useHubStore = defineStore('hub', {
   state: () => ({
     clients: [],
@@ -37,20 +41,25 @@ const useHubStore = defineStore('hub', {
 
   actions: {
     async loadAll() {
-      const [clientsRes, upstreamsRes, routesRes] = await Promise.all([
-        clientApi.list(),
-        upstreamApi.list(),
-        routeApi.list()
-      ]);
+      try {
+        const [clientsRes, upstreamsRes, routesRes] = await Promise.all([
+          clientApi.list(),
+          upstreamApi.list(),
+          routeApi.list()
+        ]);
 
-      this.clients = clientsRes.data.data || [];
-      this.upstreams = upstreamsRes.data.data || [];
-      this.routes = routesRes.data.data || [];
+        this.clients = clientsRes.data.data || [];
+        this.upstreams = upstreamsRes.data.data || [];
+        this.routes = routesRes.data.data || [];
 
-      if (!this.currentClientId && this.enabledClients.length > 0) {
-        this.currentClientId = this.enabledClients[0].id;
-        const models = this.availableModels;
-        if (models.length > 0) this.currentModel = models[0];
+        if (!this.currentClientId && this.enabledClients.length > 0) {
+          this.currentClientId = this.enabledClients[0].id;
+          const models = this.availableModels;
+          if (models.length > 0) this.currentModel = models[0];
+        }
+      } catch (err) {
+        antd.message.error('加载数据失败：' + extractError(err));
+        throw err;
       }
     },
 

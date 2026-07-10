@@ -32,6 +32,10 @@ const RouteManager = {
       { title: '操作', key: 'action' }
     ];
 
+    function extractError(err) {
+      return err.response?.data?.error?.message || err.message || '未知错误';
+    }
+
     function resetForm() {
       form.id = null;
       form.clientId = store.clients[0]?.id || '';
@@ -81,6 +85,8 @@ const RouteManager = {
           label: m.id,
           value: m.id
         }));
+      } catch (err) {
+        antd.message.error('获取模型失败：' + extractError(err));
       } finally {
         fetching.value[index] = false;
       }
@@ -95,19 +101,26 @@ const RouteManager = {
         enabled: form.enabled
       };
 
-      if (isEdit.value) {
-        await routeApi.update(form.id, data);
-      } else {
-        await routeApi.create(data);
+      try {
+        if (isEdit.value) {
+          await routeApi.update(form.id, data);
+        } else {
+          await routeApi.create(data);
+        }
+        modalVisible.value = false;
+        await store.loadAll();
+      } catch (err) {
+        antd.message.error('保存失败：' + extractError(err));
       }
-
-      modalVisible.value = false;
-      await store.loadAll();
     }
 
     async function deleteRoute(id) {
-      await routeApi.delete(id);
-      await store.loadAll();
+      try {
+        await routeApi.delete(id);
+        await store.loadAll();
+      } catch (err) {
+        antd.message.error('删除失败：' + extractError(err));
+      }
     }
 
     function getClientName(clientId) {

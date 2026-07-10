@@ -12,6 +12,9 @@ const mountRoutes = require('./router');
 function createApp() {
   const app = express();
 
+  // 隐藏框架信息，减少信息泄露
+  app.disable('x-powered-by');
+
   app.use(corsMiddleware);
   app.use(bodyParser);
   app.use(express.static(path.join(__dirname, '../public')));

@@ -73,6 +73,10 @@ const UpstreamManager = {
       return value.slice(0, 6) + '****' + value.slice(-4);
     }
 
+    function extractError(err) {
+      return err.response?.data?.error?.message || err.message || '未知错误';
+    }
+
     async function saveUpstream() {
       const data = {
         name: form.name,
@@ -90,19 +94,26 @@ const UpstreamManager = {
         })
       };
 
-      if (isEdit.value) {
-        await upstreamApi.update(form.id, data);
-      } else {
-        await upstreamApi.create(data);
+      try {
+        if (isEdit.value) {
+          await upstreamApi.update(form.id, data);
+        } else {
+          await upstreamApi.create(data);
+        }
+        modalVisible.value = false;
+        await store.loadAll();
+      } catch (err) {
+        antd.message.error('保存失败：' + extractError(err));
       }
-
-      modalVisible.value = false;
-      await store.loadAll();
     }
 
     async function deleteUpstream(id) {
-      await upstreamApi.delete(id);
-      await store.loadAll();
+      try {
+        await upstreamApi.delete(id);
+        await store.loadAll();
+      } catch (err) {
+        antd.message.error('删除失败：' + extractError(err));
+      }
     }
 
     async function fetchModels(record) {

@@ -24,6 +24,10 @@ const ClientManager = {
       { title: '操作', key: 'action' }
     ];
 
+    function extractError(err) {
+      return err.response?.data?.error?.message || err.message || '未知错误';
+    }
+
     function resetForm() {
       form.id = null;
       form.name = '';
@@ -50,19 +54,26 @@ const ClientManager = {
         enabled: form.enabled
       };
 
-      if (isEdit.value) {
-        await clientApi.update(form.id, data);
-      } else {
-        await clientApi.create(data);
+      try {
+        if (isEdit.value) {
+          await clientApi.update(form.id, data);
+        } else {
+          await clientApi.create(data);
+        }
+        modalVisible.value = false;
+        await store.loadAll();
+      } catch (err) {
+        antd.message.error('保存失败：' + extractError(err));
       }
-
-      modalVisible.value = false;
-      await store.loadAll();
     }
 
     async function deleteClient(id) {
-      await clientApi.delete(id);
-      await store.loadAll();
+      try {
+        await clientApi.delete(id);
+        await store.loadAll();
+      } catch (err) {
+        antd.message.error('删除失败：' + extractError(err));
+      }
     }
 
     return {

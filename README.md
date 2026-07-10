@@ -6,14 +6,39 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/lei-rr/api-hub/blob/master/LICENSE">
+    <img src="https://img.shields.io/github/license/lei-rr/api-hub" alt="License">
+  </a>
+  <img src="https://img.shields.io/badge/node-%3E%3D18-brightgreen" alt="Node.js">
+  <img src="https://img.shields.io/badge/vue-3.x-4FC08D" alt="Vue 3">
+  <img src="https://img.shields.io/badge/express-4.x-lightgrey" alt="Express">
+</p>
+
+<p align="center">
   <a href="#快速开始">快速开始</a> ·
   <a href="#接口使用示例">接口示例</a> ·
   <a href="#架构说明">架构说明</a> ·
   <a href="#部署">部署</a> ·
-  <a href="#环境变量">环境变量</a>
+  <a href="#环境变量">环境变量</a> ·
+  <a href="#贡献">贡献</a>
 </p>
 
 ---
+
+## 目录
+
+- [简介](#简介)
+- [核心特性](#核心特性)
+- [快速开始](#快速开始)
+- [接口使用示例](#接口使用示例)
+- [架构说明](#架构说明)
+- [配置](#配置)
+- [环境变量](#环境变量)
+- [部署](#部署)
+- [开发](#开发)
+- [路线图](#路线图)
+- [贡献](#贡献)
+- [许可证](#许可证)
 
 ## 简介
 
@@ -67,19 +92,25 @@ npm start
 - 用户名：`admin`
 - 密码：`admin`
 
-### 5. 默认客户端调用
+### 5. 配置并调用
+
+登录后台后：
+
+1. 进入「上游」，添加你的上游地址和 API Key
+2. 进入「客户端」，创建一个客户端并记下 API Key
+3. 进入「路由规则」，将客户端模型映射到上游模型
+
+然后即可调用：
 
 ```bash
 curl http://localhost:3000/v1/chat/completions \
-  -H "Authorization: Bearer guolei" \
+  -H "Authorization: Bearer <your-client-api-key>" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "gpt-4o-mini",
+    "model": "<your-client-model>",
     "messages": [{"role": "user", "content": "Hello"}]
   }'
 ```
-
-> 默认配置会把 `gpt-4o-mini` 转发到 `https://api.guolei.cc/v1`（请在后台「上游」中替换为你自己的上游地址和密钥）。
 
 ## 接口使用示例
 
@@ -184,13 +215,13 @@ Upstream OpenAI API
 
 ### 默认数据
 
-首次启动后自动生成：
+首次启动后只会自动生成管理员配置：
 
 - 管理员：`admin` / `admin`（Token：`hub-guolei-token`）
-- 客户端 API Key：`guolei`
-- 默认客户端模型：`gpt-4o-mini`
 
 > 建议首次登录后立即在后台或通过修改 `data/admin.json` 更换管理员密码和 Token。
+
+上游、客户端、路由规则需要在后台手动创建，或直接编辑 `data/upstreams.json`、`data/clients.json`、`data/routes.json`。
 
 ### 替换上游
 
@@ -276,10 +307,15 @@ npm run dev
 
 ## 贡献
 
-欢迎 Issue 和 PR。提交前请确保：
+欢迎 Issue 和 PR。详见 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
-1. `node -c` 通过语法检查
+提交前请确保：
+
+1. `npm test` 通过语法检查
 2. 本地启动后能正常转发 `/v1/chat/completions`
+3. 没有提交 `data/` 目录下的 JSON 文件
+
+安全相关问题请查看 [SECURITY.md](SECURITY.md)。
 
 ## 许可证
 

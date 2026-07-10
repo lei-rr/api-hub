@@ -1,11 +1,12 @@
 {
   "name": "api-hub",
   "version": "1.0.0",
-  "description": "OpenAI 兼容 API 中转与管理平台，支持客户端、路由规则、渠道、密钥四模块解耦与一对多路由",
+  "description": "OpenAI 兼容 API 中转与管理平台，支持客户端、路由规则、上游三模块解耦与一对多路由",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "test": "node -c app.js && node -c core/bootstrap.js && node -c core/router.js && echo 'Syntax check passed'"
   },
   "repository": {
     "type": "git",
@@ -23,14 +24,12 @@
   "license": "MIT",
   "dependencies": {
     "axios": "^1.6.2",
-    "express": "^4.18.2",
-    "openai": "^6.45.0"
+    "express": "^4.18.2"
   },
   "engines": {
     "node": ">=18.0.0"
   },
   "devDependencies": {
-    "jsdom": "^29.1.1",
     "nodemon": "^3.1.14"
   }
 }

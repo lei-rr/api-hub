@@ -20,7 +20,7 @@ function pipeStream(upstreamRes, clientRes) {
   upstreamRes.pipe(clientRes);
 
   upstreamRes.on('error', err => {
-    console.error('Upstream stream error:', err);
+    console.error('Upstream stream error:', err.message);
     if (!clientRes.headersSent) {
       clientRes.status(502).end();
     } else {
@@ -29,25 +29,6 @@ function pipeStream(upstreamRes, clientRes) {
   });
 }
 
-function sendSSE(clientRes) {
-  clientRes.setHeader('Content-Type', 'text/event-stream');
-  clientRes.setHeader('Cache-Control', 'no-cache');
-  clientRes.setHeader('Connection', 'keep-alive');
-  clientRes.status(200);
-}
-
-function writeSSEChunk(clientRes, data) {
-  clientRes.write(`data: ${JSON.stringify(data)}\n\n`);
-}
-
-function writeSSEDone(clientRes) {
-  clientRes.write('data: [DONE]\n\n');
-  clientRes.end();
-}
-
 module.exports = {
-  pipeStream,
-  sendSSE,
-  writeSSEChunk,
-  writeSSEDone
+  pipeStream
 };
