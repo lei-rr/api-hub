@@ -83,11 +83,11 @@ npm install
 npm start
 ```
 
-服务默认运行在 `http://localhost:3000`。
+服务默认运行在 `http://localhost:2020`。
 
 ### 4. 访问后台
 
-打开浏览器访问 `http://localhost:3000`，使用默认管理员账号登录：
+打开浏览器访问 `http://localhost:2020`，使用默认管理员账号登录：
 
 - 用户名：`admin`
 - 密码：`admin`
@@ -103,7 +103,7 @@ npm start
 然后即可调用：
 
 ```bash
-curl http://localhost:3000/v1/chat/completions \
+curl http://localhost:2020/v1/chat/completions \
   -H "Authorization: Bearer <your-client-api-key>" \
   -H "Content-Type: application/json" \
   -d '{
@@ -117,7 +117,7 @@ curl http://localhost:3000/v1/chat/completions \
 ### curl
 
 ```bash
-curl http://localhost:3000/v1/chat/completions \
+curl http://localhost:2020/v1/chat/completions \
   -H "Authorization: Bearer <your-client-api-key>" \
   -H "Content-Type: application/json" \
   -d '{
@@ -134,7 +134,7 @@ from openai import OpenAI
 
 client = OpenAI(
     api_key="your-client-api-key",
-    base_url="http://localhost:3000/v1"
+    base_url="http://localhost:2020/v1"
 )
 
 res = client.chat.completions.create(
@@ -231,7 +231,7 @@ Upstream OpenAI API
 
 | 变量 | 说明 | 默认值 |
 |---|---|---|
-| `PORT` | 服务端口 | `3000` |
+| `PORT` | 服务端口 | `2020` |
 
 管理员账号/密码/Token 已迁移到 `data/admin.json`，不再通过环境变量配置。
 
@@ -252,7 +252,7 @@ User=www-data
 WorkingDirectory=/opt/api-hub
 ExecStart=/usr/bin/node app.js
 Restart=on-failure
-Environment="PORT=3000"
+Environment="PORT=2020"
 
 [Install]
 WantedBy=multi-user.target
@@ -273,7 +273,7 @@ server {
     server_name hub.example.com;
 
     location / {
-        proxy_pass http://127.0.0.1:3000;
+        proxy_pass http://127.0.0.1:2020;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -296,7 +296,7 @@ docker pull ghcr.io/lei-rr/api-hub:master
 ```bash
 docker run -d \
   --name api-hub \
-  -p 3000:3000 \
+  -p 2020:2020 \
   -v $(pwd)/data:/app/data \
   ghcr.io/lei-rr/api-hub:master
 ```
@@ -313,7 +313,7 @@ services:
     image: ghcr.io/lei-rr/api-hub:master
     container_name: api-hub
     ports:
-      - "3000:3000"
+      - "2020:2020"
     volumes:
       - ./data:/app/data
     restart: unless-stopped

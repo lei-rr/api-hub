@@ -5,7 +5,7 @@ services:
     image: ghcr.io/lei-rr/api-hub:master
     container_name: api-hub
     ports:
-      - "3000:3000"
+      - "2020:2020"
     volumes:
       - ./data:/app/data
     restart: unless-stopped

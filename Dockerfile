@@ -12,6 +12,6 @@ COPY . .
 # 数据目录挂载点（运行时数据不存入镜像）
 VOLUME ["/app/data"]
 
-EXPOSE 3000
+EXPOSE 2020
 
 CMD ["node", "app.js"]
