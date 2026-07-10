@@ -293,19 +293,19 @@ mkdir -p data && docker run -d \
   -p 2020:2020 \
   -v $(pwd)/data:/app/data \
   --restart unless-stopped \
-  ghcr.io/lei-rr/api-hub:latest
+  ghcr.io/lei-rr/api-hub:master
 ```
 
 > **必须带 `-v $(pwd)/data:/app/data`**，否则容器删除后所有配置（管理员密码、上游密钥、路由规则）都会丢失。
 >
-> `latest` 标签始终指向最近一次 `master` 分支构建的镜像。
+> 当前使用 `master` 标签。后续在 workflow 中开启 `latest=true` 后，可改用 `latest` 标签。
 
 #### 分步操作
 
 拉取镜像：
 
 ```bash
-docker pull ghcr.io/lei-rr/api-hub:latest
+docker pull ghcr.io/lei-rr/api-hub:master
 ```
 
 创建本地数据目录并运行：
@@ -317,7 +317,7 @@ docker run -d \
   -p 2020:2020 \
   -v $(pwd)/data:/app/data \
   --restart unless-stopped \
-  ghcr.io/lei-rr/api-hub:latest
+  ghcr.io/lei-rr/api-hub:master
 ```
 
 #### 使用 Docker Compose
@@ -327,7 +327,7 @@ version: '3.8'
 
 services:
   api-hub:
-    image: ghcr.io/lei-rr/api-hub:latest
+    image: ghcr.io/lei-rr/api-hub:master
     container_name: api-hub
     ports:
       - "2020:2020"
