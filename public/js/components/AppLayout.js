@@ -17,8 +17,8 @@ const AppLayout = {
       { key: '/test', label: '中转测试' },
       { key: '/channels', label: '渠道' },
       { key: '/keys', label: '密钥' },
-      { key: '/routes', label: '路由规则' },
-      { key: '/clients', label: '客户端' }
+      { key: '/clients', label: '客户端' },
+      { key: '/routes', label: '路由规则' }
     ];
 
     function logout() {
