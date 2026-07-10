@@ -20,9 +20,9 @@ const KeyManager = {
     });
 
     const columns = [
-      { title: '所属渠道', key: 'channel' },
-      { title: '名称', dataIndex: 'name', key: 'name' },
-      { title: '密钥', key: 'value' },
+      { title: '渠道', key: 'channel' },
+      { title: '密钥名称', dataIndex: 'name', key: 'name' },
+      { title: '密钥值', key: 'value' },
       { title: '默认', dataIndex: 'isDefault', key: 'isDefault' },
       { title: '启用', dataIndex: 'enabled', key: 'enabled' },
       { title: '操作', key: 'action' }
@@ -140,18 +140,18 @@ const KeyManager = {
         width="500px"
       >
         <a-form layout="vertical">
-          <a-form-item label="所属渠道">
+          <a-form-item label="渠道">
             <a-select
               v-model:value="form.channelId"
               :options="store.channels.map(c => ({ label: c.name, value: c.id }))"
               placeholder="选择渠道"
             />
           </a-form-item>
-          <a-form-item label="名称">
+          <a-form-item label="密钥名称">
             <a-input v-model:value="form.name" placeholder="如：主密钥" />
           </a-form-item>
           <a-form-item label="密钥值">
-            <a-input v-model:value="form.value" placeholder="sk-xxxxxxxx" />
+            <a-input v-model:value="form.value" placeholder="如：sk-xxxxxxxx" />
           </a-form-item>
           <a-form-item>
             <a-space>

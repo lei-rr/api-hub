@@ -19,7 +19,7 @@ const ChannelManager = {
 
     const columns = [
       { title: '渠道名称', dataIndex: 'name', key: 'name' },
-      { title: '上游地址', dataIndex: 'baseUrl', key: 'baseUrl' },
+      { title: '渠道地址', dataIndex: 'baseUrl', key: 'baseUrl' },
       { title: '启用', dataIndex: 'enabled', key: 'enabled' },
       { title: '操作', key: 'action' }
     ];
@@ -114,8 +114,8 @@ const ChannelManager = {
           <a-form-item label="渠道名称">
             <a-input v-model:value="form.name" placeholder="如：OpenAI 官方" />
           </a-form-item>
-          <a-form-item label="上游地址 (baseUrl)">
-            <a-input v-model:value="form.baseUrl" placeholder="https://api.openai.com/v1" />
+          <a-form-item label="渠道地址">
+            <a-input v-model:value="form.baseUrl" placeholder="如：https://api.guolei.cc/v1" />
           </a-form-item>
           <a-form-item>
             <a-checkbox v-model:checked="form.enabled">启用</a-checkbox>

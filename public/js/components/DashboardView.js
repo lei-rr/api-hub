@@ -54,7 +54,7 @@ const DashboardView = {
           <a-table-column title="渠道" dataIndex="channelId" key="channel">
             <template #default="{ text }">{{ getChannelName(text) }}</template>
           </a-table-column>
-          <a-table-column title="上游模型" dataIndex="upstreamModel" />
+          <a-table-column title="渠道模型" dataIndex="upstreamModel" />
           <a-table-column title="状态" dataIndex="enabled" key="enabled">
             <template #default="{ text }">
               <a-tag :color="text ? 'success' : 'default'">{{ text ? '启用' : '禁用' }}</a-tag>

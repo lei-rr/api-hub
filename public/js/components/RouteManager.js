@@ -1,6 +1,6 @@
 /**
  * 路由规则管理组件
- * 客户端 + 客户端模型名 → 渠道 + 上游模型
+ * 客户端 + 客户端模型名 → 渠道 + 渠道模型
  */
 
 const RouteManager = {
@@ -12,6 +12,7 @@ const RouteManager = {
     const modalVisible = Vue.ref(false);
     const isEdit = Vue.ref(false);
     const fetching = Vue.ref(false);
+    const upstreamOptions = Vue.ref([]);
 
     const form = Vue.reactive({
       id: null,
@@ -22,13 +23,11 @@ const RouteManager = {
       enabled: true
     });
 
-    const selectedChannelId = Vue.ref('');
-
     const columns = [
       { title: '客户端', key: 'client' },
       { title: '客户端模型', dataIndex: 'clientModel', key: 'clientModel' },
       { title: '渠道', key: 'channel' },
-      { title: '上游模型', dataIndex: 'upstreamModel', key: 'upstreamModel' },
+      { title: '渠道模型', dataIndex: 'upstreamModel', key: 'upstreamModel' },
       { title: '启用', dataIndex: 'enabled', key: 'enabled' },
       { title: '操作', key: 'action' }
     ];
@@ -40,6 +39,7 @@ const RouteManager = {
       form.clientModel = '';
       form.upstreamModel = '';
       form.enabled = true;
+      upstreamOptions.value = [];
     }
 
     function openCreate() {
@@ -48,10 +48,11 @@ const RouteManager = {
       modalVisible.value = true;
     }
 
-    function openEdit(record) {
+    async function openEdit(record) {
       Object.assign(form, record);
       isEdit.value = true;
       modalVisible.value = true;
+      await fetchUpstream();
     }
 
     async function saveRoute() {
@@ -79,18 +80,17 @@ const RouteManager = {
     }
 
     async function fetchUpstream() {
-      if (!selectedChannelId.value) return;
+      if (!form.channelId) return;
       fetching.value = true;
       try {
-        const res = await channelApi.fetchModels(selectedChannelId.value);
-        store.setUpstreamModels(res.data.data || []);
+        const res = await channelApi.fetchModels(form.channelId);
+        upstreamOptions.value = (res.data.data || []).map(m => ({
+          label: m.id,
+          value: m.id
+        }));
       } finally {
         fetching.value = false;
       }
-    }
-
-    function selectUpstreamModel(modelId) {
-      form.upstreamModel = modelId;
     }
 
     function getClientName(clientId) {
@@ -109,14 +109,13 @@ const RouteManager = {
       isEdit,
       form,
       columns,
-      selectedChannelId,
       fetching,
+      upstreamOptions,
       openCreate,
       openEdit,
       saveRoute,
       deleteRoute,
       fetchUpstream,
-      selectUpstreamModel,
       getClientName,
       getChannelName
     };
@@ -161,13 +160,6 @@ const RouteManager = {
         width="600px"
       >
         <a-form layout="vertical">
-          <a-form-item label="客户端">
-            <a-select
-              v-model:value="form.clientId"
-              :options="store.clients.map(c => ({ label: c.name + ' (' + c.apiKey + ')', value: c.id }))"
-              placeholder="选择客户端"
-            />
-          </a-form-item>
           <a-form-item label="渠道">
             <a-select
               v-model:value="form.channelId"
@@ -175,42 +167,34 @@ const RouteManager = {
               placeholder="选择渠道"
             />
           </a-form-item>
+          <a-form-item label="渠道模型">
+            <a-space style="width: 100%;">
+              <a-select
+                v-model:value="form.upstreamModel"
+                :options="upstreamOptions"
+                placeholder="选择或输入渠道模型名"
+                style="width: 360px"
+                show-search
+                allow-clear
+                :dropdown-match-select-width="false"
+              />
+              <a-button :loading="fetching" @click="fetchUpstream">获取</a-button>
+            </a-space>
+          </a-form-item>
+          <a-form-item label="客户端">
+            <a-select
+              v-model:value="form.clientId"
+              :options="store.clients.map(c => ({ label: c.name + ' (' + c.apiKey + ')', value: c.id }))"
+              placeholder="选择客户端"
+            />
+          </a-form-item>
           <a-form-item label="客户端模型名">
             <a-input v-model:value="form.clientModel" placeholder="Codex 里填的模型名，如：gpt" />
-          </a-form-item>
-          <a-form-item label="上游模型名">
-            <a-input v-model:value="form.upstreamModel" placeholder="上游真实模型名，如：gpt-5.5" />
           </a-form-item>
           <a-form-item>
             <a-checkbox v-model:checked="form.enabled">启用</a-checkbox>
           </a-form-item>
         </a-form>
-
-        <a-divider>或从上游自动选择模型</a-divider>
-
-        <a-space direction="vertical" style="width: 100%;">
-          <a-space>
-            <a-select
-              v-model:value="selectedChannelId"
-              :options="store.channels.map(c => ({ label: c.name, value: c.id }))"
-              placeholder="选择渠道"
-              style="width: 240px"
-            />
-            <a-button :loading="fetching" @click="fetchUpstream">获取上游模型</a-button>
-          </a-space>
-
-          <a-space v-if="store.upstreamModels.length > 0" wrap>
-            <a-tag
-              v-for="m in store.upstreamModels"
-              :key="m.id"
-              color="blue"
-              style="cursor: pointer;"
-              @click="selectUpstreamModel(m.id)"
-            >
-              {{ m.id }}
-            </a-tag>
-          </a-space>
-        </a-space>
       </a-modal>
     </div>
   `

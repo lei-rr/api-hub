@@ -18,8 +18,8 @@ const ClientManager = {
     });
 
     const columns = [
-      { title: '名称', dataIndex: 'name', key: 'name' },
-      { title: 'API Key', dataIndex: 'apiKey', key: 'apiKey' },
+      { title: '客户端名称', dataIndex: 'name', key: 'name' },
+      { title: '客户端 API Key', dataIndex: 'apiKey', key: 'apiKey' },
       { title: '启用', dataIndex: 'enabled', key: 'enabled' },
       { title: '操作', key: 'action' }
     ];
@@ -111,10 +111,10 @@ const ClientManager = {
         width="500px"
       >
         <a-form layout="vertical">
-          <a-form-item label="名称">
-            <a-input v-model:value="form.name" placeholder="如：默认客户端" />
+          <a-form-item label="客户端名称">
+            <a-input v-model:value="form.name" placeholder="如：Codex" />
           </a-form-item>
-          <a-form-item label="API Key">
+          <a-form-item label="客户端 API Key">
             <a-input v-model:value="form.apiKey" placeholder="客户端调用时使用的 Key，如 guolei" />
           </a-form-item>
           <a-form-item>
