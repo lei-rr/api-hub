@@ -1,6 +1,6 @@
 /**
  * 聊天面板组件
- * 展示当前客户端的路由：客户端 + 模型 → 渠道 + 渠道模型
+ * 展示当前客户端的路由：客户端 + 模型 → 上游 + 上游模型
  */
 
 const ChatPanel = {
@@ -37,8 +37,8 @@ const ChatPanel = {
       if (!route.targets || route.targets.length === 0) return '路由规则无目标';
 
       const targets = route.targets.map(t => {
-        const channel = store.channels.find(c => c.id === t.channelId);
-        return `${channel?.name || '-'}/${t.upstreamModel}`;
+        const upstream = store.upstreams.find(u => u.id === t.upstreamId);
+        return `${upstream?.name || '-'}/${t.upstreamModel}`;
       });
       return `策略：${route.strategy === 'round-robin' ? '轮询' : '随机'} | 目标：${targets.join('、')}`;
     });

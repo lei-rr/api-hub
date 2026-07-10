@@ -13,8 +13,7 @@ const routes = [
     children: [
       { path: 'dashboard', component: DashboardView, meta: { title: '控制台' } },
       { path: 'test', component: ChatPanel, meta: { title: '中转测试' } },
-      { path: 'channels', component: ChannelManager, meta: { title: '渠道' } },
-      { path: 'keys', component: KeyManager, meta: { title: '密钥' } },
+      { path: 'upstreams', component: UpstreamManager, meta: { title: '上游' } },
       { path: 'clients', component: ClientManager, meta: { title: '客户端' } },
       { path: 'routes', component: RouteManager, meta: { title: '路由规则' } }
     ]

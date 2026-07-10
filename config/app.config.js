@@ -5,9 +5,8 @@ module.exports = {
   dataDir: path.join(__dirname, '../data'),
   files: {
     clients: path.join(__dirname, '../data/clients.json'),
-    channels: path.join(__dirname, '../data/channels.json'),
-    routes: path.join(__dirname, '../data/routes.json'),
-    keys: path.join(__dirname, '../data/keys.json')
+    upstreams: path.join(__dirname, '../data/upstreams.json'),
+    routes: path.join(__dirname, '../data/routes.json')
   },
   admin: {
     username: process.env.ADMIN_USERNAME || 'admin',

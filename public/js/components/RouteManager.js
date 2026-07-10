@@ -1,6 +1,6 @@
 /**
  * 路由规则管理组件
- * 客户端 + 客户端模型名 → 多个目标（渠道 + 渠道模型）
+ * 客户端 + 客户端模型名 → 多个目标（上游 + 上游模型）
  */
 
 const RouteManager = {
@@ -27,7 +27,7 @@ const RouteManager = {
       { title: '客户端', key: 'client' },
       { title: '客户端模型', dataIndex: 'clientModel', key: 'clientModel' },
       { title: '策略', dataIndex: 'strategy', key: 'strategy' },
-      { title: '目标渠道', key: 'targets' },
+      { title: '目标上游', key: 'targets' },
       { title: '启用', dataIndex: 'enabled', key: 'enabled' },
       { title: '操作', key: 'action' }
     ];
@@ -60,7 +60,7 @@ const RouteManager = {
 
     function addTarget() {
       form.targets.push({
-        channelId: store.channels[0]?.id || '',
+        upstreamId: store.upstreams[0]?.id || '',
         upstreamModel: '',
         weight: 1
       });
@@ -72,11 +72,11 @@ const RouteManager = {
 
     async function fetchUpstream(index) {
       const target = form.targets[index];
-      if (!target || !target.channelId) return;
+      if (!target || !target.upstreamId) return;
 
       fetching.value[index] = true;
       try {
-        const res = await channelApi.fetchModels(target.channelId);
+        const res = await upstreamApi.fetchModels(target.upstreamId);
         upstreamOptions.value[index] = (res.data.data || []).map(m => ({
           label: m.id,
           value: m.id
@@ -115,14 +115,14 @@ const RouteManager = {
       return client ? `${client.name} (${client.apiKey})` : '-';
     }
 
-    function getChannelName(channelId) {
-      const channel = store.channels.find(c => c.id === channelId);
-      return channel ? channel.name : '-';
+    function getUpstreamName(upstreamId) {
+      const upstream = store.upstreams.find(u => u.id === upstreamId);
+      return upstream ? upstream.name : '-';
     }
 
     function formatTargets(targets) {
       if (!targets || targets.length === 0) return '-';
-      return targets.map(t => `${getChannelName(t.channelId)}/${t.upstreamModel}`).join('、');
+      return targets.map(t => `${getUpstreamName(t.upstreamId)}/${t.upstreamModel}`).join('、');
     }
 
     return {
@@ -204,26 +204,35 @@ const RouteManager = {
             </a-radio-group>
           </a-form-item>
 
-          <a-form-item label="目标渠道">
+          <a-form-item label="目标上游">
             <a-space direction="vertical" style="width: 100%;" size="small">
               <a-row v-for="(target, index) in form.targets" :key="index" :gutter="8" align="middle">
-                <a-col :span="9">
+                <a-col :span="7">
                   <a-select
-                    v-model:value="target.channelId"
-                    :options="store.channels.map(c => ({ label: c.name, value: c.id }))"
-                    placeholder="选择渠道"
+                    v-model:value="target.upstreamId"
+                    :options="store.upstreams.map(u => ({ label: u.name, value: u.id }))"
+                    placeholder="选择上游"
                     style="width: 100%;"
                   />
                 </a-col>
-                <a-col :span="9">
+                <a-col :span="7">
                   <a-select
                     v-model:value="target.upstreamModel"
                     :options="upstreamOptions[index] || []"
-                    placeholder="渠道模型名"
+                    placeholder="上游模型名"
                     style="width: 100%;"
                     show-search
                     allow-clear
                     :dropdown-match-select-width="false"
+                  />
+                </a-col>
+                <a-col :span="4">
+                  <a-input-number
+                    v-model:value="target.weight"
+                    :min="1"
+                    :max="100"
+                    placeholder="权重"
+                    style="width: 100%;"
                   />
                 </a-col>
                 <a-col :span="6">
@@ -234,7 +243,7 @@ const RouteManager = {
                 </a-col>
               </a-row>
               <a-button type="dashed" block @click="addTarget" v-if="form.targets.length < 10">
-                + 添加目标渠道
+                + 添加目标上游
               </a-button>
             </a-space>
           </a-form-item>

@@ -10,8 +10,7 @@ const DashboardView = {
 
     const stats = Vue.computed(() => {
       return [
-        { title: '渠道', value: store.channels.length },
-        { title: '密钥', value: store.keys.length },
+        { title: '上游', value: store.upstreams.length },
         { title: '路由规则', value: store.routes.length },
         { title: '客户端', value: store.clients.length }
       ];
@@ -22,23 +21,23 @@ const DashboardView = {
       return client ? `${client.name} (${client.apiKey})` : '-';
     }
 
-    function getChannelName(channelId) {
-      const channel = store.channels.find(c => c.id === channelId);
-      return channel ? channel.name : '-';
+    function getUpstreamName(upstreamId) {
+      const upstream = store.upstreams.find(u => u.id === upstreamId);
+      return upstream ? upstream.name : '-';
     }
 
     return {
       store,
       stats,
       getClientName,
-      getChannelName
+      getUpstreamName
     };
   },
 
   template: `
     <div>
       <a-row :gutter="16" style="margin-bottom: 24px;">
-        <a-col v-for="stat in stats" :key="stat.title" :span="6" :xs="12" :sm="12" :md="6">
+        <a-col v-for="stat in stats" :key="stat.title" :span="8" :xs="12" :sm="12" :md="8">
           <a-card>
             <a-statistic :title="stat.title" :value="stat.value" />
           </a-card>
@@ -54,11 +53,11 @@ const DashboardView = {
           <a-table-column title="策略" dataIndex="strategy" key="strategy">
             <template #default="{ text }">{{ text === 'round-robin' ? '轮询' : '随机' }}</template>
           </a-table-column>
-          <a-table-column title="目标渠道" key="targets">
+          <a-table-column title="目标上游" key="targets">
             <template #default="{ record }">
               <a-space wrap>
                 <a-tag v-for="(t, i) in record.targets" :key="i">
-                  {{ getChannelName(t.channelId) }}/{{ t.upstreamModel }}
+                  {{ getUpstreamName(t.upstreamId) }}/{{ t.upstreamModel }}
                 </a-tag>
               </a-space>
             </template>

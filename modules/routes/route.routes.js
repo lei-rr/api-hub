@@ -8,10 +8,10 @@ const routeService = require('./route.service');
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  const { clientId, channelId } = req.query;
+  const { clientId, upstreamId } = req.query;
   let data;
   if (clientId) data = routeService.listByClient(clientId);
-  else if (channelId) data = routeService.listByChannel(channelId);
+  else if (upstreamId) data = routeService.listByUpstream(upstreamId);
   else data = routeService.list();
   res.json({ data });
 });

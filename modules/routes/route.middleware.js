@@ -1,13 +1,12 @@
 /**
  * 路由解析中间件
  * 根据 req.client 和请求体中的 model，解析出：
- * route / target / channel / key / upstreamModel
+ * route / target / upstream / key / upstreamModel
  * 结果挂载到 req.routeContext
  */
 
 const { NotFoundError, ValidationError } = require('../../shared/errors');
-const channelService = require('../channels/channel.service');
-const keyService = require('../keys/key.service');
+const upstreamService = require('../upstreams/upstream.service');
 const routeService = require('./route.service');
 
 function routeMiddleware(req, res, next) {
@@ -33,21 +32,21 @@ function routeMiddleware(req, res, next) {
       throw new NotFoundError('No available target for this route');
     }
 
-    const channel = channelService.getById(target.channelId);
-    if (!channel || !channel.enabled) {
-      throw new NotFoundError('Channel not found or disabled');
+    const upstream = upstreamService.getById(target.upstreamId);
+    if (!upstream || !upstream.enabled) {
+      throw new NotFoundError('Upstream not found or disabled');
     }
 
-    const key = keyService.getDefaultForChannel(channel.id);
+    const key = upstreamService.getDefaultKey(upstream);
     if (!key || !key.enabled) {
-      throw new NotFoundError(`No available key for channel ${channel.name}`);
+      throw new NotFoundError(`No available key for upstream ${upstream.name}`);
     }
 
     req.routeContext = {
       client,
       route,
       target,
-      channel,
+      upstream,
       key,
       upstreamModel: target.upstreamModel
     };

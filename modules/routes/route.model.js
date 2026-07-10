@@ -1,6 +1,6 @@
 /**
  * 路由规则数据模型
- * 客户端 + 客户端模型名 → 多个目标（渠道 + 渠道模型）
+ * 客户端 + 客户端模型名 → 多个目标（上游 + 上游模型）
  */
 
 function validate(data) {
@@ -18,7 +18,7 @@ function validate(data) {
     errors.push('targets must be a non-empty array');
   } else {
     data.targets.forEach((target, index) => {
-      if (!target.channelId) errors.push(`targets[${index}].channelId is required`);
+      if (!target.upstreamId) errors.push(`targets[${index}].upstreamId is required`);
       if (!target.upstreamModel) errors.push(`targets[${index}].upstreamModel is required`);
     });
   }
@@ -38,7 +38,7 @@ function create(data) {
     strategy: data.strategy || 'round-robin',
     currentIndex: data.currentIndex || 0,
     targets: Array.isArray(data.targets) ? data.targets.map(t => ({
-      channelId: t.channelId || '',
+      upstreamId: t.upstreamId || '',
       upstreamModel: t.upstreamModel || '',
       weight: typeof t.weight === 'number' ? t.weight : 1
     })) : [],

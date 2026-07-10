@@ -1,8 +1,8 @@
 /**
- * 密钥数据仓库
+ * 上游数据仓库
  */
 
 const config = require('../../config/app.config');
 const { create } = require('../../shared/jsonRepository');
 
-module.exports = create(config.files.keys);
+module.exports = create(config.files.upstreams);

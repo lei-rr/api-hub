@@ -1,6 +1,6 @@
 /**
  * 路由规则业务逻辑
- * 客户端 + 客户端模型名 → 多个目标（渠道 + 渠道模型）
+ * 客户端 + 客户端模型名 → 多个目标（上游 + 上游模型）
  */
 
 const { uuid, now } = require('../../shared/utils');
@@ -83,9 +83,9 @@ function listByClient(clientId) {
   return list().filter(r => r.clientId === clientId);
 }
 
-function listByChannel(channelId) {
+function listByUpstream(upstreamId) {
   return list().filter(r =>
-    r.targets.some(t => t.channelId === channelId)
+    r.targets.some(t => t.upstreamId === upstreamId)
   );
 }
 
@@ -130,7 +130,7 @@ module.exports = {
   update,
   remove,
   listByClient,
-  listByChannel,
+  listByUpstream,
   getByClientModel,
   selectTarget,
   getAllClientModels

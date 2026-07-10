@@ -37,12 +37,12 @@ const clientApi = {
   delete(id) { return api.delete(`/api/clients/${id}`); }
 };
 
-const channelApi = {
-  list() { return api.get('/api/channels'); },
-  create(data) { return api.post('/api/channels', data); },
-  update(id, data) { return api.put(`/api/channels/${id}`, data); },
-  delete(id) { return api.delete(`/api/channels/${id}`); },
-  fetchModels(id) { return api.get(`/api/channels/${id}/fetch-models`); }
+const upstreamApi = {
+  list() { return api.get('/api/upstreams'); },
+  create(data) { return api.post('/api/upstreams', data); },
+  update(id, data) { return api.put(`/api/upstreams/${id}`, data); },
+  delete(id) { return api.delete(`/api/upstreams/${id}`); },
+  fetchModels(id) { return api.get(`/api/upstreams/${id}/fetch-models`); }
 };
 
 const routeApi = {
@@ -50,13 +50,6 @@ const routeApi = {
   create(data) { return api.post('/api/routes', data); },
   update(id, data) { return api.put(`/api/routes/${id}`, data); },
   delete(id) { return api.delete(`/api/routes/${id}`); }
-};
-
-const keyApi = {
-  list(params) { return api.get('/api/keys', { params }); },
-  create(data) { return api.post('/api/keys', data); },
-  update(id, data) { return api.put(`/api/keys/${id}`, data); },
-  delete(id) { return api.delete(`/api/keys/${id}`); }
 };
 
 const proxyApi = {

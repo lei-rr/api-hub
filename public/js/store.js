@@ -1,6 +1,6 @@
 /**
  * Pinia Store
- * 路由核心：客户端 + 客户端模型名 → 多个目标（渠道 + 渠道模型）
+ * 路由核心：客户端 + 客户端模型名 → 多个目标（上游 + 上游模型）
  */
 
 const { defineStore } = Pinia;
@@ -8,9 +8,8 @@ const { defineStore } = Pinia;
 const useHubStore = defineStore('hub', {
   state: () => ({
     clients: [],
-    channels: [],
+    upstreams: [],
     routes: [],
-    keys: [],
     currentClientId: null,
     currentModel: '',
     messages: [],
@@ -38,17 +37,15 @@ const useHubStore = defineStore('hub', {
 
   actions: {
     async loadAll() {
-      const [clientsRes, channelsRes, routesRes, keysRes] = await Promise.all([
+      const [clientsRes, upstreamsRes, routesRes] = await Promise.all([
         clientApi.list(),
-        channelApi.list(),
-        routeApi.list(),
-        keyApi.list()
+        upstreamApi.list(),
+        routeApi.list()
       ]);
 
       this.clients = clientsRes.data.data || [];
-      this.channels = channelsRes.data.data || [];
+      this.upstreams = upstreamsRes.data.data || [];
       this.routes = routesRes.data.data || [];
-      this.keys = keysRes.data.data || [];
 
       if (!this.currentClientId && this.enabledClients.length > 0) {
         this.currentClientId = this.enabledClients[0].id;
