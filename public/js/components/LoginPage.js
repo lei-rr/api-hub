@@ -51,7 +51,7 @@ const LoginPage = {
         <div style="width: min(360px, calc(100vw - 32px));">
           <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 30px;">
             <a-avatar shape="square" size="large" style="background: #1677ff">H</a-avatar>
-            <a-typography-title :level="3" style="margin: 0; line-height: 1;">Hub Proxy</a-typography-title>
+            <a-typography-title :level="3" style="margin: 0; line-height: 1;">API Hub</a-typography-title>
           </div>
           <a-form layout="vertical" @submit.prevent="submit">
             <a-form-item style="margin-bottom: 18px;">

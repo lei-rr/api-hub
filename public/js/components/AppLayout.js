@@ -46,7 +46,7 @@ const AppLayout = {
           <div class="app-brand-nav">
             <router-link to="/dashboard" class="app-brand">
               <a-avatar shape="square" style="background: #1677ff;">H</a-avatar>
-              <a-typography-text strong style="font-size: 16px;">Hub Proxy</a-typography-text>
+              <a-typography-text strong style="font-size: 16px;">API Hub</a-typography-text>
             </router-link>
             <a-menu
               class="app-menu"
